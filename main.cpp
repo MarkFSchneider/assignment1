@@ -1,4 +1,4 @@
-#include "dnastats.h"
+#include "DNAStats.h"
 #include <iostream>
 #include <string>
 #include <time.h>
