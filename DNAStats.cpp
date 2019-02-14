@@ -10,7 +10,10 @@ DNAStats::DNAStats(string filename)
   string line;
   while(getline(file, line))
   {
+    if(line != "\n" || "")
+    {
     updateNumbers(line);
+    }
   }
 
   //updates the ratios.
@@ -85,6 +88,11 @@ void DNAStats::zeroVariables()
 
   varianceDNALength  = 0;
   //stdDeviationDNALength  = 0;
+
+  accurateFile = false;
+  bigramError = false;
+  caseError = false;
+  letterError = false;
 }
 
 int DNAStats::countLetter(string fullString, char chosenLetter)
@@ -97,6 +105,21 @@ int DNAStats::countLetter(string fullString, char chosenLetter)
     {
       count += 1;
     }
+
+    if(!toupper(fullString.at(i)) == 'A' || 'T' || 'C' || 'G')
+    {
+      //checks if a letter is ATCG and flags an error if that doesn't happen
+      letterError = true;
+    }
+
+    if(toupper(fullString.at(i))==chosenLetter && fullString.at(i)!= chosenLetter)
+    {
+      //checks for lowercase letters and flags them (lowercase letters mess with the bigram)
+       caseError = true;
+    }
+
+
+
   }
   return count;
 }
@@ -107,6 +130,7 @@ int DNAStats::countBigram(string fullString, string chosenBigram)
   for(unsigned i=0; i<fullString.length(); i+=2)
   {
     if(fullString.substr(i,2)==chosenBigram){
+    //if(("" + toupper(fullString.at(i) + "" + toupper(fullString.at(i+1)) == chosenBigram){
       count += 1;
     }
   }
@@ -211,7 +235,7 @@ double DNAStats::calculateStandardGaussian()
   double uniformRandomA = rand() * (1.0 / RAND_MAX);
   double uniformRandomB = rand() * (1.0 / RAND_MAX);
 
-  double pi = 3.141592653589793238463; //is there really no pi in this c++ version?
+  double pi = 3.141592653589793238463; //wasn't sure if MATH_PI exists in this c++ version
 
   double standardGaussian = sqrt(-2.0 * log(uniformRandomA)) * cos(2 * pi * uniformRandomB);
   return standardGaussian;
@@ -222,7 +246,7 @@ int DNAStats::newDNALength()
   double doubleLength;
   doubleLength = meanDNALength + (sqrt(varianceDNALength) * calculateStandardGaussian());
   int intLength = round(doubleLength);
-  if(intLength < 0)
+  if(intLength <= 0)
   {
     intLength = newDNALength();
   }

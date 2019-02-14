@@ -26,6 +26,9 @@ public:
   string chooseNucleotide();
   string createDNA();
 
+  //string toAString();
+  //tried to get this method to work, had difficulty understanding how to manipulate variables into strings
+
 
 
   int aN;
@@ -85,6 +88,11 @@ public:
 
 
   float varianceDNALength;
+
+  bool accurateFile;
+  bool bigramError;
+  bool caseError;
+  bool letterError;
   //int stdDeviationDNALength;
   //Variance is The average of the squared differences from the Mean.
   //Take each difference, square it, and average the results

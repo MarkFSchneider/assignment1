@@ -10,3 +10,5 @@ http://www.stephenconover.com/box-muller-transform/
 https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
 
 https://stackoverflow.com/questions/1727881/how-to-use-the-pi-constant-in-c
+
+http://www.cplusplus.com/forum/beginner/149175/
