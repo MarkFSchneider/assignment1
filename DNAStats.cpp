@@ -10,6 +10,7 @@ DNAStats::DNAStats(string filename)
   string line;
   while(getline(file, line))
   {
+    //checks if a line is empty before calculating
     if(line != "\n" || "")
     {
     updateNumbers(line);
@@ -31,6 +32,7 @@ DNAStats::~DNAStats()
 
 void DNAStats::zeroVariables()
 {
+  //helps clear memory errors
   aN = 0;
   tN  = 0;
   cN  = 0;
@@ -87,7 +89,6 @@ void DNAStats::zeroVariables()
   meanDNALength = 0;
 
   varianceDNALength  = 0;
-  //stdDeviationDNALength  = 0;
 
   accurateFile = false;
   bigramError = false;
@@ -97,6 +98,7 @@ void DNAStats::zeroVariables()
 
 int DNAStats::countLetter(string fullString, char chosenLetter)
 {
+  //counts the number of chosen letter chars in a string
   int count = 0;
   for(unsigned i=0; i<fullString.length(); ++i)
   {
@@ -108,7 +110,7 @@ int DNAStats::countLetter(string fullString, char chosenLetter)
 
     if(!toupper(fullString.at(i)) == 'A' || 'T' || 'C' || 'G')
     {
-      //checks if a letter is ATCG and flags an error if that doesn't happen
+      //checks if a letter is ATCG and flags an error if that doesn't happen (Unexpected letters mess with the bigram)
       letterError = true;
     }
 
@@ -126,6 +128,8 @@ int DNAStats::countLetter(string fullString, char chosenLetter)
 
 int DNAStats::countBigram(string fullString, string chosenBigram)
 {
+
+  //reads a string and checks for a given two characters in a row, each two characters
   int count = 0;
   for(unsigned i=0; i<fullString.length(); i+=2)
   {
@@ -139,8 +143,13 @@ int DNAStats::countBigram(string fullString, string chosenBigram)
 
 void DNAStats::updateNumbers(string fullString)
 {
+/*looks at a string and updates internal variables based on that string.
+Ignores characters that arent ATCG, but doesn't break in case of an unexpected
+character.
 
-
+Variables include the count of each letter and bigram, the total DNA length,
+number of lines, and the mean length of each line
+*/
   sumDNALength += fullString.length();
   numberDNALines += 1;
   meanDNALength = (float)sumDNALength / numberDNALines;
@@ -180,6 +189,7 @@ void DNAStats::updateNumbers(string fullString)
 
 float DNAStats::divide(int numerator, int denomenator)
 {
+  //divides 2 ints into a float. I'm not sure what I was thinking
   return (float)numerator / denomenator;
 }
 
@@ -213,7 +223,12 @@ void DNAStats::updatePercents()
 
 float DNAStats::calculateVariance(string filename)
 {
-
+  /*
+  Takes the calculated mean and rereads the file.
+  Each line is parsed for length and that length is subtracted from the mean.
+  Those numbers are squared, and divided by the total number of lines
+  this is the varience in the line length in the file
+  */
   ifstream file(filename);
   string line;
 
@@ -230,7 +245,9 @@ float DNAStats::calculateVariance(string filename)
 
 double DNAStats::calculateStandardGaussian()
 {
-  //sad. g++ 6.3.0 doesn't use c++11
+  //Calculates a standard gaussian ratio.
+  //does this version of G++ have the gaussian distribution random function?
+
 
   double uniformRandomA = rand() * (1.0 / RAND_MAX);
   double uniformRandomB = rand() * (1.0 / RAND_MAX);
@@ -243,11 +260,13 @@ double DNAStats::calculateStandardGaussian()
 
 int DNAStats::newDNALength()
 {
+  //calculates a length based on a standard gaussian, the varience, and the mean DNA Length
   double doubleLength;
   doubleLength = meanDNALength + (sqrt(varianceDNALength) * calculateStandardGaussian());
   int intLength = round(doubleLength);
   if(intLength <= 0)
   {
+    //makes it so the function can't return a 0 length line
     intLength = newDNALength();
   }
   return intLength;
@@ -255,6 +274,14 @@ int DNAStats::newDNALength()
 
 string DNAStats::chooseNucleotide()
 {
+/*
+Chooses a neucliotide based on the relative percents.
+Plots the percents on a numberline from 0-99, proportionally split
+A random number is chosen, and wherever it falls on that line, that number is selected.
+Slight margin of error exists in accuracy in a percent accuracy greater than 2 numbers (.XX/1, or XX%)
+*/
+
+
   float aPerc = aP * 100;
   float tPerc = tP * 100;
   float cPerc = cP * 100;
@@ -290,6 +317,9 @@ string DNAStats::chooseNucleotide()
 
 string DNAStats::createDNA()
 {
+  /*
+  Chooses a Length, and fills a string with that many Neucleotides
+  */
   int length = newDNALength();
   string newDNA = "";
 
