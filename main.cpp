@@ -15,6 +15,7 @@ string filename = "defaultDNAin.txt";
 
 bool static programExit()
 {
+  //Checks if the program will end, or continue running
   char answer;
   cout << "Process another list? Y/N" << endl;
   cin >> answer;
